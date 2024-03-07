@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>3D Printer Gateway - MrDIY.ca</title>
+      <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png"> 
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+      <link href="css/main.css?v=TIMESTAMP" rel="stylesheet">
+   </head>
+   <body>
+      <div class="d-flex flex-column" style="width: 4.5rem;"  id="tabs">
+         <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
+            <li><a href="https://www.mrdiy.ca" target="_blank" class="nav-link py-3 border-bottom"><img class="logo" src="img/MrDIY_logo.png"></a></li>
+            <li><a id="home" href="#home"  class="nav-link py-3 border-bottom active"><svg class="bi" width="24" height="24" transform="rotate(180)"><use xlink:href="#home_icon"></use></svg></a>
+            </li>
+            <li><a id="sd_card"  href="#sd_card"  class="nav-link py-3 border-bottom">       <svg class="bi" width="24" height="24"><use xlink:href="#sd_card_icon"></use></svg></a></li>
+            <li><a id="console"  href="#console"  class="nav-link py-3 border-bottom">       <svg class="bi" width="24" height="24"><use xlink:href="#console_icon"></use></svg></a></li>
+            <li><a id="advanced" href="#advanced" class="nav-link py-3 border-bottom">       <svg class="bi" width="24" height="24"> <use xlink:href="#gear_fill_icon"></use></svg></a></li>
+            <li><a id="features" href="#features" class="nav-link py-3 border-bottom">       <svg class="bi" width="24" height="24"><use xlink:href="#info_icon"></use></svg></a></li>
+         </ul>
+      </div>
+      <div class="d-flex mrdiy_divider" id="mrdiy_divider"></div>
+      <div class="a_tab m-2 d-flex flex-column align-items-stretch" style="flex: 1;" id="tab_home">
+         <div class="row  p-3">
+            <div class="col-md-3 col-6">
+               <div class=" d-flex">
+                  <h1 class="text-primary current_bed_temperature_group" id="current_bed_temperature">-</h1>
+                  <h1 class="text-primary current_bed_temperature_group">°C</h1>
+               </div>
+               <span class="text-muted">bed / </span><span class="text-muted" id="set_bed_temperature">-</span><span class="text-muted">°C</span>
+            </div>
+            <div class="col-md-3 col-6">
+               <div class=" d-flex">
+                  <h1 class="text-primary current_hotend_temperature_group"  id="current_hotend_temperature">-</h1>
+                  <h1 class="text-primary current_hotend_temperature_group">°C</h1>
+               </div>
+               <span class="text-muted">hotend / </span><span class="text-muted" id="set_hotend_temperature">-</span><span class="text-muted">°C</span>
+            </div>
+            <div class="col-md-3 col-6 mt-4 mt-md-0">
+               <div class=" d-flex">
+                  <h1 class="text-primary"  id="timer_lapsed"></h1>
+               </div>
+               <span class="text-muted" id="current_file_process"></span>
+            </div>
+            <div class="col-md-3 col-6 mt-4 mt-md-0">
+               <h1 class="text-mrdiy-light text-capitalize" id="printer_status">Offline</h1>
+               <span class="text-muted" id="current_file_name"></span>
+               <span class="" id="busy_box"></span>
+            </div>
+         </div>
+         <div class="row  p-3">
+            <div class="col-12">
+               <div class="progress " style="height: 30px;">
+                  <div class="progress-bar" style="width: 100%" aria-valuenow="100" id="progress-bar"></div>
+               </div>
+            </div>
+         </div>
+         <div class="row p-3 justify-content-md-center">
+            <div class="btn-group mt-1 col-12" role="group">
+                  <button id="action_show_sd_card" type="button" class="btn text-mrdiy-dark border btn-lg">
+                     <svg class="bi align-middle" width="20" height="20">
+                        <use xlink:href="#sd_card_icon"></use>
+                     </svg>
+                     <span id="action_show_sd_card_txt">Print<span id="files_letter_s"></span></span>
+                  </button>
+                   <button id="action_pause" type="button" class="btn border  text-warning btn-lg">
+                     <svg class="bi align-middle text-warning" width="24" height="24">
+                        <use xlink:href="#pause_icon"></use>
+                     </svg>
+                     Pause
+                  </button>                 
+                  <button id="action_stop" type="button" class="btn border  text-danger btn-lg">
+                     <svg class="bi align-middle text-danger" width="24" height="24">
+                        <use xlink:href="#stop_icon"></use>
+                     </svg>
+                     Stop
+                  </button>
+                  <button type="button" class="no-click btn border btn-lg text-mrdiy-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Z height">
+                     <svg class="bi align-middle" width="20" height="20">
+                        <use xlink:href="#z_icon">0</use>
+                     </svg>
+                     Z<span id="printing_z_height">0</span>
+                  </button>
+                  <button type="button" class="no-click btn border btn-lg text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="feed rate">
+                     <svg class="bi align-middle" width="20" height="20">
+                        <use xlink:href="#speed_icon"></use>
+                     </svg>
+                     <span id="printing_feedrate">0</span>
+                  </button> 
+                  <button type="button" class="no-click btn border btn-lg text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="flow rate">
+                     <svg class="bi align-middle" width="20" height="20" transform='rotate(180)'>
+                        <use xlink:href="#home_icon"></use>
+                     </svg>
+                     <span id="printing_flow">0</span>
+                  </button>                
+            </div>
+         </div>
+         <div class="row  p-4">
+            <div class="col-sm-12 col-md-6 mb-5">
+               <canvas class="col-12" id="temps_chart"></canvas>
+            </div>
+             <div class="col-sm-12 col-md-6" id="feed_url">
+               <canvas class="col-12" id="position_chart"></canvas> 
+            </div> 
+         </div>         
+      </div>
+
+      <div class="a_tab  m-2 d-flex flex-column align-items-stretch hidden_forced" style="flex: 1;" id="tab_sd_card">      
+         <div class="d-flex border-bottom align-items-center flex-shrink-0 p-3 border-mrdiy-light text-decoration-none justify-content-between">
+            <div class="col-4 fs-4  fw-semibold" id="reload_files">SD Card</div>
+            <div class="col-8" style="text-align:right">
+                <a class="col-auto" href="#" id="action_refresh_sd_card" >
+                    <button id="action_refresh_sd_card_do" type="button" class="btn bg-light"><svg class="bi text-mrdiy-dark" width="16" height="16">
+                        <use xlink:href="#reload_icon"></use> </svg>
+                    </button>
+                <button id="action_refresh_sd_card_loading" class="spinner-border spinner-border-sm text-mrdiy-dark" style="display:none;"></button>
+                </a>
+            </div>
+         </div>
+         <div class="col-md-12 mt-3">
+            <ul class="list-group" id="print_files_list"><p class="m-3">If the file list is not populated automatically, click on the refresh icon at the top-right corner.</p></ul>
+            <p class="m-3" id="sd_card_has_no_files" style="display:none;">The SD Card is not inserted or has no GCODE files.</p>
+         </div>       
+      </div>
+      <div class="a_tab m-2 d-flex flex-column align-items-stretch hidden_forced" style="flex: 1;" id="tab_console">
+         <span class="d-flex align-items-center flex-shrink-0 p-3 border-mrdiy-light text-decoration-none justify-content-between">
+         <span class="fs-4 fw-semibold">Console</span>
+         <span class="fs-7 text-secondary">
+               <select class="me-2" onchange="changeBaud()" id="baud" name="baud">
+                  <option value=4800>4800</option>
+                  <option value=9600>9600</option>
+                  <option value=14400>14400</option>
+                  <option value=19200>19200</option>
+                  <option value=28800>28800</option>
+                  <option value=38400>38400</option>
+                  <option value=57600>57600</option>
+                  <option value=115200>115200</option>
+                  <option value=250000>250000</option>
+               </select>
+         </span>
+         </span>
+         <div class="p-2 flex-grow-1"><textarea  class="h-100 text-secondary form-control h-90 flex-grow-1" id="console_output" rows="3"></textarea></div>
+         <div class="mt-auto m-2">
+            <div class="row">
+               <div class="col-9 col-lg-11"><input id="console_input" type="text" class="form-control" id="gcode_command" placeholder="G-Code Command" maxlength="" autocomplete="off"></div>
+               <div class="col-3 col-lg-1"><button id="console_input_send_button" type="submit" class="btn btn-primary mb-2">SEND</button></div>
+            </div>
+         </div>
+      </div>
+       <div class="a_tab m-2 d-flex flex-column align-items-stretch hidden_forced" style="flex: 1;" id="tab_advanced">
+
+           <div class="alert_settings_changed alert bg-mrdiy-light text-white m-3 row pb-2" role="alert" style="display:none;">
+                <div class="col-10 mt-2">The settings have been changed.</div>
+                <button type="button" class="settings_changed_button col-2 btn btn-primary mb-2">Save</button>
+          </div>                 
+           <div class="d-flex align-items-center flex-shrink-0 p-3 border-mrdiy-light text-decoration-none border-bottom">
+           <span class="fs-4 fw-semibold">G-code</span>
+           </div>           
+            <div class="row form-group p-3 pb-0"> 
+              <div class="col-md-4 mb-3">
+                <label class="col-sm-12" for="">Send on start</label>
+                <div class="col-sm-12">
+                  <textarea id="settings_on_boot_commands" class="settings_field form-control" rows="3"  maxlength=""></textarea>
+                </div>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="lastName">Send periodically</label>
+                <textarea id="settings_periodical_commands" class="settings_field form-control" rows="3"  maxlength=""></textarea>
+                <small class="text-muted" style="font-size:10px;">&nbsp;&nbsp;use M105 if M155 is not available for example</small>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="lastName">Period length (in seconds)</label>
+                <input id="settings_periodical_commands_interval" type="number" min="30" class="settings_field form-control"  placeholder="" value="" required="" maxlength="" style="width: 100px">
+              </div>
+            </div>                 
+            <div class="row form-group p-3 pb-0"> 
+              <div class="col-md-4 mb-3">
+                <label class="col-sm-12" for="">Start a print job</label>
+                <div class="col-sm-12">
+                  <textarea id="settings_print_commands" class="settings_field form-control" rows="3"  maxlength=""></textarea>
+                  <small class="text-muted" style="font-size:10px;">&nbsp;&nbsp;FILENAME will be replaced with the actual file name.</small>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="lastName">Pause the print job</label>
+                <textarea id="settings_pause_commands" class="settings_field form-control" rows="3"  maxlength=""></textarea>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="lastName">Stop the print job</label>
+                <textarea id="settings_stop_commands" class="settings_field form-control" rows="3"  maxlength="" style="overflow-x:scroll;"></textarea>
+              </div>
+              
+           </div>
+         <div class="d-flex align-items-center flex-shrink-0 p-3  pt-5 border-mrdiy-light text-decoration-none border-bottom">
+         <div class="fs-4 fw-semibold">Data Parser</div>
+         </div>
+
+            <div class="row form-group p-3 pb-0"> 
+                <div class="col-md-6 mb-3">
+                  <label for="lastName">Temperature (bed,current)</label>
+                  <input id="settings_regx_temperature_bed_current" type="text" class="settings_field form-control settings_field"  placeholder="" value="" required="" maxlength="">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="lastName">Temperature (hotend,current)</label>
+                  <input id="settings_regx_temperature_hotend_current" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+                </div>
+            </div>
+             <div class="row form-group p-3 pb-3"> 
+                <div class="col-md-6 mb-3">
+                  <label for="lastName">Temperature (bed,set)</label>
+                  <input id="settings_regx_temperature_bed_set" type="text" class="settings_field form-control settings_field"  placeholder="" value="" required="" maxlength="">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="lastName">Temperature (hotend,set)</label>
+                  <input id="settings_regx_temperature_hotend_set" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+                </div>
+            </div>
+            
+            <div class="d-flex align-items-center flex-shrink-0 p-2  text-decoration-none border-bottom"></div>  
+            
+              <div class="row form-group p-3 pb-3 mt-3"> 
+                <div class="col-md-4 mb-3">
+                  <label for="lastName">Position (x)</label>
+                  <input id="settings_regx_position_x" type="text" class="settings_field form-control settings_field"  placeholder="" value="" required="" maxlength="">
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="lastName">Position (y)</label>
+                  <input id="settings_regx_position_y" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="lastName">Position (z)</label>
+                  <input id="settings_regx_position_z" type="text" class="settings_field settings_field form-control"  placeholder="" value="" required="" maxlength="">
+                </div>               
+            </div>   
+            
+            <div class="d-flex align-items-center flex-shrink-0 p-2  text-decoration-none border-bottom"></div>  
+             
+              <div class="row form-group p-3 pb-3 mt-3"> 
+                <div class="col-md-6 mb-3">
+                  <label for="lastName">Print (process)</label>
+                  <input id="settings_regx_sd_print_process" type="text" class="settings_field form-control settings_field"  placeholder="" value="" required="" maxlength="">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="lastName">Print (time)</label>
+                  <input id="settings_regx_sd_print_time" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+                </div>
+            </div>                     
+            <div class="row form-group p-3 pb-0"> 
+            <div class="col-md-6 mb-3">
+                <label for="lastName">Print (filename)</label>
+                <input id="settings_regx_printing_filename" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="lastName">Print (in progress)</label>
+                <input id="settings_regx_printing_indicator" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+              </div>
+           </div> 
+           <div class="row form-group p-3 pb-3 mt-3"> 
+              <div class="col-md-6 mb-3">
+                <label for="lastName">Print (start)</label>
+                <input id="settings_regx_print_start" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="lastName">Print (end)</label>
+                <input id="settings_regx_print_end" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+              </div>
+           </div> 
+
+           <div class="d-flex align-items-center flex-shrink-0 p-2  text-decoration-none border-bottom"></div>  
+
+           <div class="row form-group p-3 pb-0"> 
+              <div class="col-md-4 mb-3">
+                <label for="lastName">File list (start)</label>
+                <input id="settings_regx_file_list_start" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="lastName">File list (end)</label>
+                <input id="settings_regx_file_list_end" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+              </div> 
+              <div class="col-md-4 mb-3">
+                <label for="lastName">File list (name)</label>
+                <input id="settings_regx_file_list_parser" type="text" class="settings_field form-control"  placeholder="" value="" required="" maxlength="">
+              </div>            
+           </div>           
+           <div class="d-flex align-items-center flex-shrink-0 p-2  text-decoration-none border-bottom"></div>                                 
+           <div class="row form-group pt-5"></div>  
+      </div>
+      <div class="a_tab m-2 d-flex flex-column align-items-stretch hidden_forced" style="flex: 1;" id="tab_features">
+           <div class="d-flex align-items-center flex-shrink-0 p-3 border-mrdiy-light text-decoration-none border-bottom justify-content-between">
+            <span class="fs-4 fw-semibold">Device</span>
+            <span class="fs-7 text-secondary"></span>
+           </div>
+          <div class="row form-group p-3 pb-0"> 
+                <div class="col-12 col-md-6" ><strong>Wi-Fi</strong>      <p id="info_wifi"></div>
+                <div class="col-12 col-md-6"><strong>IP address</strong> <p id="info_ip_address"></p></div>
+                <div class="col-12 col-md-6"><strong>MAC address</strong><p id="info_mac_address"></p></div>
+                <div class="col-12 col-md-6" style="display:none;"><strong>Firmware</strong><p id="info_firmware" class="text-lowercase"></p></div>
+                <div class="col-12 col-md-6"><strong>Gateway version</strong><p id="info_version"></p></div>  
+                <div class="col-12 col-md-6"><strong>Interface version</strong><p>INTERFACE_VERSION</p></div>               
+                <div class="col-12 col-md-6" style="display:none;"><strong>Printer stats</strong><p id="info_stats"></p></div>
+         </div>
+          <div class="d-flex align-items-center flex-shrink-0 p-3 border-mrdiy-light text-decoration-none border-bottom">
+             <span class="fs-4 fw-semibold mt-3">Tools</span>
+          </div>
+          <div class="row form-group p-3 pb-0"> 
+                <div class="row mb-3 mt-2">
+                 <div class="row mb-3">
+                  <div class="col-12 col-md-2"><button class="btn bg-mrdiy-dark text-white"  id="cmd_reboot">Reboot</button></div>
+                  <div class="col-12 col-md-10">Your will need to refresh this page after rebooting the companion board.</p></div>
+                </div>  
+                 <div class="row mb-3">
+                  <div class="col-12 col-md-2"><a target="_blank" href="https://gitlab.com/MrDIYca/3DPWG/-/issues"><button class="btn bg-mrdiy-dark text-white"  id="cmd_reboot">Report a bug</button></a></div>
+                  <div class="col-12 col-md-10" for="lastName">Please provide as much data as you can (browser, OS, error code, verions .. etc) with screenshots when possible.</p></div>
+                </div>                 
+              </div>         
+      </div>
+          <div class="d-flex align-items-center flex-shrink-0 p-3 border-mrdiy-light text-decoration-none border-bottom">
+             <span class="fs-4 fw-semibold mt-3">Donation</span>
+          </div>
+          <div class="row form-group p-3 pb-0"> 
+                <div class="row mb-3 mt-2">
+                 <div class="row mb-3">
+                  <div class="col-12 col-md-12">This project is 100% crowd-funded by people just like you. You can support it directly by becoming a YouTube member or by shopping at <a href="https://store.mrdiy.ca/" target="_blank">my store</a>. Thank you!</p></div>
+                </div>  
+                 <div class="row mb-3">
+                  <div class="col-12"><a style="background-color:#ffffff;color:#000000;" target="_blank" href="https://www.youtube.com/channel/UCtfYdcn8F8wfRA2BXp2FPtg/join" class="btn bg-mrdiy-light text-white mb-3">Become a YouTube Member</a></div>
+                </div>               
+              </div>         
+      </div>       
+      </div>  
+
+      <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+         <symbol id="home_icon" viewBox="0 0 16 16">
+            <path d="m 7.4021 6.6629 c 0.0168 -0.9072 0.037 -1.0248 0.2318 -1.3978 c 0.131 -0.2419 0.4838 -0.5813 0.7426 -0.7056 c 0.3864 -0.1882 0.4368 -0.1915 3.0072 -0.1915 c 2.3688 0 2.4595 -0.0034 2.5334 -0.1142 c 0.0504 -0.0706 0.0302 -0.3125 -0.0302 -0.3595 c -0.0437 -0.0403 -0.9173 -0.0504 -5.2651 -0.0638 l -5.2114 -0.0168 l -0.2184 -0.0739 c -0.5477 -0.1882 -0.84 -0.5712 -0.84 -1.1021 c 0 -0.5309 0.2923 -0.9139 0.84 -1.1021 l 0.2184 -0.0739 l 5.2114 -0.0168 c 4.3478 -0.0134 5.2214 -0.0235 5.2651 -0.0638 c 0.0605 -0.047 0.0806 -0.289 0.0302 -0.3595 c -0.0739 -0.1142 -0.1142 -0.1142 -5.6482 -0.1142 l -5.4802 0 l 0 -0.4536 l 0 -0.4536 l 5.5373 0.0067 l 5.5339 0.0101 l 0.1915 0.0739 c 0.5376 0.205 0.7997 0.5678 0.7997 1.1088 c 0 0.4838 -0.2688 0.8568 -0.7694 1.0584 l -0.1882 0.0773 l -5.245 0.0168 c -5.1005 0.0168 -5.2483 0.0202 -5.3189 0.0806 c -0.0974 0.0874 -0.0974 0.3226 0 0.4099 c 0.0706 0.0605 0.2184 0.0638 5.3189 0.0806 l 5.245 0.0168 l 0.1882 0.0773 c 0.5006 0.2016 0.7694 0.5746 0.7694 1.0584 c 0 0.541 -0.2621 0.9072 -0.7997 1.1088 c -0.1882 0.0706 -0.2285 0.0739 -2.6611 0.0907 c -1.8715 0.0134 -2.4931 0.0269 -2.5637 0.0605 c -0.1747 0.0739 -0.3158 0.205 -0.4133 0.383 l -0.0974 0.1781 l -0.0101 0.7997 l -0.0101 0.7963 l -0.457 0 l -0.4536 0 l 0.0168 -0.8299 z m -2.1706 10.4933 c -0.1949 -0.0706 -0.3461 -0.205 -0.4402 -0.3965 l -0.0874 -0.1747 l 0 -2.4528 l 0 -2.4562 l 0.0806 -0.168 c 0.0773 -0.1747 0.2318 -0.3293 0.3864 -0.3965 c 0.047 -0.0202 0.336 -0.047 0.6384 -0.0571 l 0.5544 -0.0168 l 0.336 -1.3339 l 0.3394 -1.3373 l 0.877 0 l 0.877 0 l 0.3125 1.2365 c 0.1714 0.6787 0.3259 1.2835 0.3427 1.344 l 0.0302 0.1075 l 0.5208 0 c 0.5779 0 0.6888 0.0269 0.8837 0.2117 c 0.0605 0.0605 0.1411 0.168 0.1747 0.2419 c 0.0605 0.1277 0.0638 0.2688 0.0638 2.6141 c 0 2.0059 -0.0101 2.4998 -0.0437 2.5872 c -0.0672 0.1579 -0.215 0.3192 -0.373 0.4032 l -0.1378 0.0739 l -2.604 0.0067 c -2.1168 0.0067 -2.6275 0 -2.7317 -0.037 z m 5.1778 -0.6518 c 0.0336 -0.0235 0.0403 -0.5242 0.0336 -2.3957 l -0.0101 -2.3654 l -2.52 0 l -2.52 0 l -0.0101 2.3486 c -0.0034 1.7069 0.0034 2.3621 0.0302 2.3923 c 0.0302 0.0403 0.4637 0.047 2.4965 0.047 c 1.3507 0 2.4763 -0.0134 2.4998 -0.0269 z"></path>
+         </symbol>
+         <symbol id="gear_fill_icon" viewBox="0 0 16 16">
+            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"></path>
+         </symbol>
+         <symbol id="info_icon" viewBox="0 0 16 16">
+             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+             <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+         </symbol>
+         <symbol id="console_icon" viewBox="0 0 16 16">
+            <path d="M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.854 4.146a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z"/>
+            <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h12z"/>
+         </symbol>
+         <symbol id="pause_icon" viewBox="0 0 16 16">
+            <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/>
+         </symbol>
+         <symbol id="stop_icon" viewBox="0 0 16 16">
+            <path d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5z"/>
+         </symbol>
+         <symbol id="speed_icon" viewBox="0 0 16 16">
+            <path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4zM3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707zM2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10zm9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5zm.754-4.246a.389.389 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.389.389 0 0 0-.029-.518z"/>
+            <path fill-rule="evenodd" d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A7.988 7.988 0 0 1 0 10zm8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3z"/>
+         </symbol>     
+         <symbol id="reload_icon" viewBox="0 0 16 16">
+            <path d="M 6.1479 14.3856 c -1.0814 -0.2552 -2.3207 -0.972 -3.159 -1.8103 c -0.7898 -0.7898 -1.5309 -2.0169 -1.5309 -2.5272 c 0 -0.4981 0.4981 -0.9842 1.0085 -0.9842 c 0.5346 0 0.729 0.158 1.0814 0.8748 c 0.3766 0.7898 1.4094 1.7982 2.2478 2.1749 c 1.3608 0.6318 3.2926 0.5103 4.532 -0.2673 c 0.8748 -0.5589 0.8748 -0.5711 -0.1944 -1.6524 l -0.9598 -0.9598 l 2.7094 0 l 2.6973 0 l 0 2.6973 l 0 2.7094 l -0.9963 -0.9963 l -1.0085 -0.9842 l -0.5468 0.4253 c -1.6646 1.3001 -3.8637 1.7861 -5.8806 1.3001 z M 12.6603 6.4152 c -0.1458 -0.0729 -0.4495 -0.4617 -0.6561 -0.8505 c -0.4617 -0.8748 -1.3487 -1.7131 -2.2599 -2.1384 c -0.6075 -0.2916 -0.8384 -0.3281 -1.9683 -0.3281 c -1.1421 0 -1.3487 0.0365 -2.0291 0.3523 c -0.4131 0.1822 -0.8748 0.4738 -1.0206 0.6318 l -0.2795 0.3038 l 0.9598 0.9598 l 0.972 0.972 l -2.7094 0 l -2.6973 0 l 0 -2.6973 l 0 -2.7094 l 1.0085 0.9963 l 0.9963 1.0085 l 0.5468 -0.4374 c 2.7216 -2.1749 6.5853 -1.9562 9.0396 0.4981 c 0.8141 0.8141 1.5309 2.0291 1.5309 2.5636 c -0.0121 0.401 -0.1822 0.6804 -0.5711 0.8748 c -0.3159 0.1701 -0.4981 0.1701 -0.8627 0 z"/>
+         </symbol>
+         <symbol id="sd_card_icon" viewBox="0 0 16 16">
+            <path d="M 1.5149 2.9412 V 15.7554 C 1.5149 15.9764 1.694 16.1554 1.9149 16.1554 H 14.2405 C 14.4614 16.1554 14.6405 15.9764 14.6405 15.7554 V 6.9673 C 14.6405 6.7463 14.4614 6.5673 14.2405 6.5673 H 13.6855 V 5.4289 H 14.2405 C 14.4614 5.4289 14.6405 5.2498 14.6405 5.0289 V 0.4 C 14.6405 0.179 14.4614 0 14.2405 0 H 4.456 C 4.3499 0 4.2482 0.0421 4.1731 0.1172 L 1.6321 2.6583 C 1.557 2.7334 1.5149 2.835 1.5149 2.9412 Z M 12.5034 9.2914 V 13.0213 C 12.5034 13.4707 12.1391 13.835 11.6897 13.835 H 4.4656 C 4.0162 13.835 3.6518 13.4707 3.6518 13.0213 V 9.2914 C 3.6518 8.842 4.0162 8.4777 4.4656 8.4777 H 11.6897 C 12.1391 8.4778 12.5034 8.8421 12.5034 9.2914 Z M 5.9878 3.0741 H 4.6847 V 0.9565 H 5.9878 V 3.0741 Z M 7.91 3.0741 H 6.6069 V 0.9565 H 7.91 V 3.0741 Z M 9.8322 3.0741 H 8.529 V 0.9565 H 9.8322 V 3.0741 Z M 11.7543 3.0741 H 10.4512 V 0.9565 H 11.7543 V 3.0741 Z M 13.6765 3.0741 H 12.3734 V 0.9565 H 13.6765 V 3.0741 Z M 10.1054 10.5021 H 5.3363 C 5.1154 10.5021 4.9363 10.323 4.9363 10.1021 C 4.9363 9.8811 5.1154 9.7021 5.3363 9.7021 H 10.1054 C 10.3262 9.7021 10.5054 9.8811 10.5054 10.1021 C 10.5054 10.323 10.3262 10.5021 10.1054 10.5021 Z M 9.5343 12.5554 H 5.412 C 5.1911 12.5554 5.012 12.3763 5.012 12.1554 S 5.1911 11.7554 5.412 11.7554 H 9.5343 C 9.7552 11.7554 9.9343 11.9344 9.9343 12.1554 S 9.7552 12.5554 9.5343 12.5554 Z"/>
+         </symbol>
+        <symbol id="print_icon" viewBox="0 0 16 16">
+          <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+          <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+        </symbol>
+        <symbol id="z_icon" viewBox="0 0 16 16">
+          <path d="m14.12 10.163 1.715.858c.22.11.22.424 0 .534L8.267 15.34a.598.598 0 0 1-.534 0L.165 11.555a.299.299 0 0 1 0-.534l1.716-.858 5.317 2.659c.505.252 1.1.252 1.604 0l5.317-2.66zM7.733.063a.598.598 0 0 1 .534 0l7.568 3.784a.3.3 0 0 1 0 .535L8.267 8.165a.598.598 0 0 1-.534 0L.165 4.382a.299.299 0 0 1 0-.535L7.733.063z"/>
+  <path d="m14.12 6.576 1.715.858c.22.11.22.424 0 .534l-7.568 3.784a.598.598 0 0 1-.534 0L.165 7.968a.299.299 0 0 1 0-.534l1.716-.858 5.317 2.659c.505.252 1.1.252 1.604 0l5.317-2.659z"/>
+         </symbol>                 
+      </svg>
+   </body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+   <script src="js/chart.js"></script>
+   <script src="js/main.js?v=TIMESTAMP"></script>
+   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8235E501QV"></script>
+   <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);} gtag('js', new Date());gtag('config', 'G-8235E501QV');</script>
+</html>
